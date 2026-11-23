@@ -1,10 +1,20 @@
-import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
-const App = () => {
+import Login from './pages/Login/Login'
+import Register from './pages/Register/Register'
+import Bookings from './pages/Bookings/Bookings'
+
+function App() {
   return (
-    <div>
-      
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/bookings" element={<Bookings />} />
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   )
 }
 
