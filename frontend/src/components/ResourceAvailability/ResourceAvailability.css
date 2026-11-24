@@ -1,0 +1,170 @@
+
+.availability-container {
+  width: 100%;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.availability-header {
+  margin-bottom: 24px;
+}
+
+.availability-header h2 {
+  font-size: 24px;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.availability-header p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.availability-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.availability-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.availability-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.availability-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.availability-field input,
+.availability-field select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 14px;
+  outline: none;
+}
+
+.availability-field input:focus,
+.availability-field select:focus {
+  border-color: #2563eb;
+}
+
+.availability-search-btn,
+.select-resource-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.availability-search-btn {
+  align-self: flex-start;
+}
+
+.availability-search-btn:hover,
+.select-resource-btn:hover {
+  background: #1d4ed8;
+}
+
+.availability-search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.availability-error {
+  margin-top: 18px;
+  padding: 12px;
+  color: #b91c1c;
+  background: #fee2e2;
+  border-radius: 7px;
+}
+
+.availability-results {
+  margin-top: 30px;
+}
+
+.availability-results h3 {
+  margin-bottom: 18px;
+  color: #1e293b;
+}
+
+.availability-empty {
+  color: #64748b;
+  padding: 20px 0;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.resource-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.resource-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.resource-card-content {
+  padding: 18px;
+}
+
+.resource-card-content h3 {
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.resource-card-content p {
+  margin-bottom: 9px;
+  font-size: 14px;
+  color: #64748b;
+  overflow-wrap: anywhere;
+}
+
+.select-resource-btn {
+  width: 100%;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .availability-fields {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .availability-container {
+    padding: 16px;
+  }
+
+  .availability-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .availability-search-btn {
+    width: 100%;
+  }
+}

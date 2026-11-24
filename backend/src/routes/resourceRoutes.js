@@ -6,7 +6,8 @@ import {
   getAllResources,
   getResourceById,
   updateResource,
-  deleteResource
+  deleteResource,
+  getAvailableResources
 } from '../controllers/resourceController.js';
 
 import authMiddleware from '../middleware/authMiddleware.js';
@@ -15,6 +16,7 @@ import adminMiddleware from '../middleware/adminMiddleware.js';
 const router = express.Router();
 
 // Public routes (all authenticated or unauthenticated users can view)
+router.get('/availability', getAvailableResources);
 router.get('/', getAllResources);
 router.get('/:id', getResourceById);
 

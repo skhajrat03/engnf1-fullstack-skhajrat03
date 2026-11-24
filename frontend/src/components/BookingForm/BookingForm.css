@@ -1,0 +1,142 @@
+
+.booking-form-container {
+  max-width: 650px;
+  margin: 25px auto;
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.booking-form-container h2 {
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.booking-form-subtitle {
+  color: #64748b;
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+.selected-resource {
+  padding: 18px;
+  margin-bottom: 22px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+}
+
+.selected-resource h3 {
+  color: #2563eb;
+  margin-bottom: 12px;
+}
+
+.selected-resource p {
+  margin: 7px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.booking-confirmation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.booking-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking-form-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.booking-form-field input,
+.booking-form-field textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font: inherit;
+  outline: none;
+}
+
+.booking-form-field input:focus,
+.booking-form-field textarea:focus {
+  border-color: #2563eb;
+}
+
+.booking-form-field small {
+  color: #64748b;
+}
+
+.booking-form-error,
+.booking-form-success {
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.booking-form-error {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.booking-form-success {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.booking-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.booking-cancel-btn,
+.booking-submit-btn {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.booking-cancel-btn {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.booking-submit-btn {
+  background: #2563eb;
+  color: #fff;
+}
+
+.booking-submit-btn:hover {
+  background: #1d4ed8;
+}
+
+.booking-submit-btn:disabled,
+.booking-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .booking-form-container {
+    padding: 16px;
+  }
+
+  .booking-form-actions {
+    flex-direction: column;
+  }
+
+  .booking-form-actions button {
+    width: 100%;
+  }
+}

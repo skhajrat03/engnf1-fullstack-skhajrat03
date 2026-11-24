@@ -10,6 +10,8 @@ import Resources from './pages/Resources/Resources'
 import ResourceDetails from './pages/ResourceDetails/ResourceDetails'
 import Bookings from './pages/Bookings/Bookings'
 import Admin from "./pages/Admin/Admin";
+import MyBookings from './pages/MyBookings/MyBookings';
+import AdminBookings from './pages/AdminBookings/AdminBookings';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
 
       <Route path="*" element={<Navigate to="/login" replace />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/my-bookings" element={<MyBookings />} />
+      <Route path="/admin/bookings" element={<AdminBookings />} />
     </Routes>
   )
 }

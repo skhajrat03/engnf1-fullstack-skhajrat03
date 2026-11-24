@@ -31,4 +31,7 @@ router.patch('/:id/status', adminMiddleware, updateBookingStatus);
 // Admin: Booking statistics
 router.get('/stats', adminMiddleware, getBookingStats);
 
+router.get('/all', adminMiddleware, getAllBookings);
+router.patch('/:id/status', adminMiddleware, updateBookingStatus);
+
 export default router;

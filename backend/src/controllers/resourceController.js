@@ -1,6 +1,7 @@
 
 import mongoose from 'mongoose';
 import Resource from '../models/Resource.js';
+import Booking from '../models/Booking.js';
 
 // 1. Create a resource (Admin only)
 export const createResource = async (req, res) => {
@@ -196,6 +197,90 @@ export const deleteResource = async (req, res) => {
       success: true,
       message: 'Resource deleted successfully'
     });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+// 6. Get available resources for a selected time slot
+export const getAvailableResources = async (req, res) => {
+  try {
+    const { startTime, endTime, attendees, category } = req.query;
+
+    // Validate required query parameters
+    if (!startTime || !endTime) {
+      return res.status(400).json({
+        success: false,
+        message: 'Start time and end time are required'
+      });
+    }
+
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (
+      Number.isNaN(start.getTime()) ||
+      Number.isNaN(end.getTime()) ||
+      end <= start
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide valid start and end times'
+      });
+    }
+
+    // Validate attendee count if provided
+    let attendeeCount;
+
+    if (attendees !== undefined) {
+      attendeeCount = Number(attendees);
+
+      if (!Number.isInteger(attendeeCount) || attendeeCount < 1) {
+        return res.status(400).json({
+          success: false,
+          message: 'Attendees must be a positive whole number'
+        });
+      }
+    }
+
+    // Find resources already booked during this time slot
+    const conflictingBookings = await Booking.find({
+      status: { $in: ['Pending', 'Approved'] },
+      startTime: { $lt: end },
+      endTime: { $gt: start }
+    }).distinct('resource');
+
+    // Build resource search filters
+    const filters = {
+      isActive: true,
+      status: 'Available',
+      _id: { $nin: conflictingBookings }
+    };
+
+    if (attendeeCount !== undefined) {
+      filters.capacity = { $gte: attendeeCount };
+    }
+
+    if (category) {
+      filters.category = category;
+    }
+
+    const resources = await Resource.find(filters)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: resources.length,
+      message: resources.length
+        ? 'Available resources retrieved successfully'
+        : 'No resources available for the selected time slot',
+      resources
+    });
+
   } catch (error) {
     res.status(500).json({
       success: false,
