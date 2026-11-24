@@ -1,16 +1,128 @@
-# React + Vite
+# TriageSync – Booking Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+TriageSync is a web-based booking management application designed to simplify the process of managing bookings. It provides a platform for users to register, log in, create bookings, and manage their reservations.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- User Registration and Login
+- User Authentication
+- Booking Management
+- Create New Bookings
+- View Booking Details
+- Cancel Bookings
+- Admin Dashboard
+- MongoDB Database Integration
 
-## React Compiler
+## Technologies Used
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- React.js
+- JavaScript
+- HTML5
+- CSS3
 
-## Expanding the Oxlint configuration
+### Backend
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Project Structure
+
+
+
+TriageSync/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+│
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── server.js
+│   ├── .env
+│   └── package.json
+│
+├── README.md
+└── SOLUTION.md
+
+
+## Installation and Setup
+
+### 1. Clone the Repository
+
+
+git clone YOUR_REPOSITORY_URL
+cd TriageSync
+
+
+### 2. Setup Backend
+
+
+cd backend
+npm install
+
+
+Create a `.env` file in the backend directory:
+
+
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+
+
+### 3. Start Backend Server
+
+
+npm run dev
+
+
+### 4. Setup Frontend
+
+Open another terminal:
+
+
+cd frontend
+npm install
+npm run dev
+
+
+## MongoDB Atlas Configuration
+
+1. Create a MongoDB Atlas account.
+2. Create a database cluster.
+3. Create a database user.
+4. Configure Network Access and allow your current IP address.
+5. Copy the MongoDB connection string.
+6. Add the connection string to the backend `.env` file.
+
+## Environment Variables
+
+Never upload your `.env` file or database credentials to GitHub.
+
+Add the following to `.gitignore`:
+
+
+node_modules/
+.env
+dist/
+
+
+## Future Improvements
+
+- Booking status tracking
+- Email notifications
+- Payment integration
+- Booking history
+- Improved admin controls
+- Responsive UI enhancements
+
+## License
+
+This project is developed for educational and learning purposes.
