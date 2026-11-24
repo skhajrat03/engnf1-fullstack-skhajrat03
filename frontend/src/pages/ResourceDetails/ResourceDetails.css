@@ -1,0 +1,97 @@
+
+.resource-details-page {
+  display: grid;
+  gap: 20px;
+}
+
+.resource-back-link {
+  color: #4f46e5;
+  font-size: 14px;
+}
+
+.resource-details-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.resource-details-icon {
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  background: #eef2ff;
+  color: #4f46e5;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.resource-details-card h1 {
+  font-size: 24px;
+}
+
+.resource-id {
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.resource-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 25px 0;
+  margin-top: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resource-info label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.resource-info p {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.available-text {
+  color: #15803d;
+}
+
+.booking-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.booking-placeholder p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.booking-placeholder input,
+.booking-placeholder select {
+  padding: 12px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  width: min(100%, 320px);
+  background: white;
+}
+
+.booking-placeholder button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .resource-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
