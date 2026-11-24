@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
 import userRoutes from './src/routes/userRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
+import resourceRoutes from './src/routes/resourceRoutes.js';
+import bookingRoutes from './src/routes/bookingRoutes.js';
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/resources', resourceRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 app.get('/', (req, res) => {
   res.send('TriageSync Backend is Running');
