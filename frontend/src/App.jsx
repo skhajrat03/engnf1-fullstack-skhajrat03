@@ -10,6 +10,7 @@ import AdminResources from './pages/AdminResources/AdminResources';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminLayout from './components/AdminLayout/AdminLayout';
+import AdminUsers from './pages/AdminUsers/AdminUsers';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="resources" element={<AdminResources />} />
+          <Route path="users" element={<AdminUsers />} />
         </Route>
       </Route>
 
