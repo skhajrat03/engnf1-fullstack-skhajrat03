@@ -16,6 +16,7 @@ export const getAdminStats = async (req, res) => {
       approvedBookings,
       rejectedBookings,
       cancelledBookings,
+      recentBookings,
     ] = await Promise.all([
       User.countDocuments({ role: 'user' }),
       User.countDocuments({ role: 'admin' }),
@@ -35,6 +36,13 @@ export const getAdminStats = async (req, res) => {
       Booking.countDocuments({ status: 'Approved' }),
       Booking.countDocuments({ status: 'Rejected' }),
       Booking.countDocuments({ status: 'Cancelled' }),
+
+      Booking.find()
+        .populate('user', 'name email')
+        .populate('resource', 'name category location')
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean(),
     ]);
 
     res.status(200).json({
@@ -50,6 +58,7 @@ export const getAdminStats = async (req, res) => {
         approvedBookings,
         rejectedBookings,
         cancelledBookings,
+        recentBookings,
       },
     });
   } catch (error) {

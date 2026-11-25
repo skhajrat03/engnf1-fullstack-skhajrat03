@@ -13,44 +13,58 @@ dotenv.config();
 
 const app = express();
 
-// CORS
-app.use(cors({
-  origin: 'http://localhost:5173'
-}));
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
-// Parse JSON
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
+
+// Parse JSON requests
 app.use(express.json());
 
-// REQUEST LOGGER
+// Request logger
 app.use((req, res, next) => {
-  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  console.log(
+    `[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`
+  );
   next();
 });
 
-// API ROUTES
+// Health check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'TriageSync Backend is Running'
+  });
+});
+
+// API routes
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/bookings', bookingRoutes);
 
-// Health check
-app.get('/', (req, res) => {
-  res.send('TriageSync Backend is Running');
-});
-
-// START SERVER
+// Start server
 const startServer = async () => {
   try {
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`TriageSync server running on port ${PORT}`);
     });
-
   } catch (error) {
     console.error('Server startup error:', error);
+    process.exit(1);
   }
 };
 
