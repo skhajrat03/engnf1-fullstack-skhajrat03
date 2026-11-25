@@ -3,8 +3,14 @@ import express from 'express';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 import adminMiddleware from '../middleware/adminMiddleware.js';
+
 import { getAdminStats } from '../controllers/adminStatsController.js';
-import { getAllUsers } from '../controllers/adminUserController.js';
+
+import {
+  getAllUsers,
+  updateUserStatus,
+} from '../controllers/adminUserController.js';
+
 const router = express.Router();
 
 // Protect all admin routes
@@ -22,6 +28,11 @@ router.get('/dashboard', (req, res) => {
 
 // Admin Statistics
 router.get('/stats', getAdminStats);
+
 // Get all registered users
 router.get('/users', getAllUsers);
+
+// Update user status
+router.patch('/users/:id/status', updateUserStatus);
+
 export default router;

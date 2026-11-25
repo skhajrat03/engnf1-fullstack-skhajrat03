@@ -1,13 +1,21 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { getAllUsers } from '../../services/adminUserService';
+
+import {
+  getAllUsers,
+  updateUserStatus,
+} from '../../services/adminUserService';
+
 import './AdminUsers.css';
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+
   const [loading, setLoading] = useState(true);
+  const [updatingUserId, setUpdatingUserId] = useState(null);
   const [error, setError] = useState('');
 
   const fetchUsers = async () => {
@@ -28,6 +36,32 @@ function AdminUsers() {
     fetchUsers();
   }, []);
 
+  const handleToggleStatus = async (user) => {
+    const newStatus = user.isActive === false;
+
+    try {
+      setUpdatingUserId(user._id);
+      setError('');
+
+      const updatedUser = await updateUserStatus(
+        user._id,
+        newStatus
+      );
+
+      setUsers((previousUsers) =>
+        previousUsers.map((item) =>
+          item._id === updatedUser._id
+            ? { ...item, isActive: updatedUser.isActive }
+            : item
+        )
+      );
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
+
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       const searchValue = search.toLowerCase();
@@ -39,9 +73,22 @@ function AdminUsers() {
       const matchesRole =
         roleFilter === 'all' || user.role === roleFilter;
 
-      return matchesSearch && matchesRole;
+      const isActive = user.isActive !== false;
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'active' && isActive) ||
+        (statusFilter === 'inactive' && !isActive);
+
+      return matchesSearch && matchesRole && matchesStatus;
     });
-  }, [users, search, roleFilter]);
+  }, [users, search, roleFilter, statusFilter]);
+
+  const activeUsers = users.filter(
+    (user) => user.isActive !== false
+  ).length;
+
+  const inactiveUsers = users.length - activeUsers;
 
   return (
     <div className="admin-users">
@@ -68,13 +115,13 @@ function AdminUsers() {
         </div>
 
         <div className="users-stat-card">
-          <span>Administrators</span>
-          <h3>{users.filter((u) => u.role === 'admin').length}</h3>
+          <span>Active Users</span>
+          <h3>{activeUsers}</h3>
         </div>
 
         <div className="users-stat-card">
-          <span>Regular Users</span>
-          <h3>{users.filter((u) => u.role === 'user').length}</h3>
+          <span>Inactive Users</span>
+          <h3>{inactiveUsers}</h3>
         </div>
       </div>
 
@@ -94,19 +141,27 @@ function AdminUsers() {
           <option value="admin">Administrators</option>
           <option value="user">Regular Users</option>
         </select>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
 
       {error && (
         <div className="admin-users-error">
           {error}
-          <button type="button" onClick={fetchUsers}>
-            Retry
-          </button>
         </div>
       )}
 
       {loading ? (
-        <div className="admin-users-message">Loading users...</div>
+        <div className="admin-users-message">
+          Loading users...
+        </div>
       ) : filteredUsers.length === 0 ? (
         <div className="admin-users-empty">
           No matching users found.
@@ -119,27 +174,68 @@ function AdminUsers() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Account Status</th>
                 <th>Registered On</th>
+                <th>Action</th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user._id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <span className={`user-role ${user.role}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td>
-                    {user.createdAt
-                      ? new Date(user.createdAt).toLocaleDateString()
-                      : 'N/A'}
-                  </td>
-                </tr>
-              ))}
+              {filteredUsers.map((user) => {
+                const isActive = user.isActive !== false;
+                const isUpdating = updatingUserId === user._id;
+
+                return (
+                  <tr key={user._id}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+
+                    <td>
+                      <span className={`user-role ${user.role}`}>
+                        {user.role}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span
+                        className={`user-status ${
+                          isActive ? 'active' : 'inactive'
+                        }`}
+                      >
+                        {isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+
+                    <td>
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : 'N/A'}
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className={`user-status-btn ${
+                          isActive ? 'deactivate' : 'activate'
+                        }`}
+                        onClick={() => handleToggleStatus(user)}
+                        disabled={isUpdating || user.role === 'admin'}
+                        title={
+                          user.role === 'admin'
+                            ? 'Admin account status cannot be changed here'
+                            : ''
+                        }
+                      >
+                        {isUpdating
+                          ? 'Updating...'
+                          : isActive
+                            ? 'Deactivate'
+                            : 'Activate'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -192,3 +192,57 @@
     align-items: flex-start;
   }
 }
+
+/* Account status badges */
+.user-status {
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-status.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.user-status.inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Activate and deactivate buttons */
+.user-status-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-status-btn.deactivate {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.user-status-btn.activate {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.user-status-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.users-toolbar select {
+  min-width: 140px;
+}
+
+@media (max-width: 650px) {
+  .users-toolbar select {
+    width: 100%;
+  }
+}
