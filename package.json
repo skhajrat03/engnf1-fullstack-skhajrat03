@@ -1,0 +1,26 @@
+{
+  "name": "engnf1-fullstack-skhajrat03",
+  "version": "1.0.0",
+  "description": "TriageSync is a web-based booking management application designed to simplify the process of managing bookings. It provides a platform for users to register, log in, create bookings, and manage their reservations.",
+  "main": "index.js",
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  },
+  "scripts": {
+  "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+  "backend": "npm run dev --prefix backend",
+  "frontend": "npm run dev --prefix frontend"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skhajrat03/engnf1-fullstack-skhajrat03.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/skhajrat03/engnf1-fullstack-skhajrat03/issues"
+  },
+  "homepage": "https://github.com/skhajrat03/engnf1-fullstack-skhajrat03#readme"
+}

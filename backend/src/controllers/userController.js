@@ -3,9 +3,11 @@ import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-
+// REGISTER USER
 export const registerUser = async (req, res) => {
   try {
+    console.log('REGISTER API CALLED');
+
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -15,7 +17,6 @@ export const registerUser = async (req, res) => {
       });
     }
 
-  
     if (!name.trim()) {
       return res.status(400).json({
         success: false,
@@ -23,9 +24,9 @@ export const registerUser = async (req, res) => {
       });
     }
 
-  
     const normalizedEmail = email.trim().toLowerCase();
 
+    // Correct email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(normalizedEmail)) {
@@ -35,7 +36,6 @@ export const registerUser = async (req, res) => {
       });
     }
 
-   
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
@@ -54,10 +54,8 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
@@ -65,7 +63,8 @@ export const registerUser = async (req, res) => {
       role: 'user',
     });
 
-   
+    console.log('USER SAVED:', user.email);
+
     return res.status(201).json({
       success: true,
       message: 'Registration successful',
@@ -94,8 +93,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
-
+// LOGIN USER
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -107,7 +105,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-   
     const user = await User.findOne({
       email: email.trim().toLowerCase(),
     });
@@ -119,7 +116,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    
     const isPasswordValid = await bcrypt.compare(
       password,
       user.password
@@ -132,7 +128,10 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
     const token = jwt.sign(
       {
         id: user._id.toString(),
@@ -143,7 +142,6 @@ export const loginUser = async (req, res) => {
         expiresIn: process.env.JWT_EXPIRES_IN || '1d',
       }
     );
-
 
     return res.status(200).json({
       success: true,
@@ -158,7 +156,7 @@ export const loginUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Login Error:', error.message);
+    console.error('Login Error:', error);
 
     return res.status(500).json({
       success: false,
@@ -166,4 +164,3 @@ export const loginUser = async (req, res) => {
     });
   }
 };
-
