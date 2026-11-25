@@ -10,6 +10,9 @@ import './AdminBookings.css';
 function AdminBookings() {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState('All');
+  const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [remarks, setRemarks] = useState({});
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -17,8 +20,8 @@ function AdminBookings() {
   const [success, setSuccess] = useState('');
 
   const token = localStorage.getItem('token');
+  const ITEMS_PER_PAGE = 10;
 
-  // Fetch all bookings
   const fetchBookings = async () => {
     try {
       setLoading(true);
@@ -29,7 +32,6 @@ function AdminBookings() {
       }
 
       const data = await getAllBookings(token);
-
       setBookings(data.bookings || []);
     } catch (err) {
       setError(err.message || 'Failed to load bookings.');
@@ -42,7 +44,6 @@ function AdminBookings() {
     fetchBookings();
   }, []);
 
-  // Approve or reject booking
   const handleStatusUpdate = async (bookingId, status) => {
     const adminRemarks = remarks[bookingId] || '';
 
@@ -51,15 +52,10 @@ function AdminBookings() {
       setError('');
       setSuccess('');
 
-      await updateBookingStatus(
-        bookingId,
-        status,
-        adminRemarks,
-        token
-      );
+      await updateBookingStatus(bookingId, status, adminRemarks, token);
 
-      setBookings((prevBookings) =>
-        prevBookings.map((booking) =>
+      setBookings((prev) =>
+        prev.map((booking) =>
           booking._id === bookingId
             ? { ...booking, status, adminRemarks }
             : booking
@@ -79,13 +75,42 @@ function AdminBookings() {
     }
   };
 
-  // Filter bookings
-  const filteredBookings =
-    filter === 'All'
-      ? bookings
-      : bookings.filter((booking) => booking.status === filter);
+  const normalizedSearch = search.trim().toLowerCase();
 
-  // Format date and time
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesStatus =
+      filter === 'All' || booking.status === filter;
+
+    const matchesSearch = [
+      booking.user?.name,
+      booking.user?.email,
+      booking.resource?.name,
+      booking.purpose,
+    ].some((value) =>
+      String(value || '').toLowerCase().includes(normalizedSearch)
+    );
+
+    const matchesDate =
+      !selectedDate ||
+      (booking.startTime &&
+        new Date(booking.startTime).toLocaleDateString('en-CA') === selectedDate);
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredBookings.length / ITEMS_PER_PAGE)
+  );
+
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * ITEMS_PER_PAGE;
+
+  const paginatedBookings = filteredBookings.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
   const formatDate = (date) =>
     new Date(date).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -111,7 +136,7 @@ function AdminBookings() {
           <p>Manage and review resource booking requests.</p>
         </div>
 
-        <button onClick={fetchBookings} className="refresh-btn">
+        <button onClick={fetchBookings} className="refresh-btn" type="button">
           Refresh
         </button>
       </div>
@@ -119,43 +144,31 @@ function AdminBookings() {
       {error && <div className="booking-alert error">{error}</div>}
       {success && <div className="booking-alert success">{success}</div>}
 
-      {/* Booking Statistics */}
       <div className="booking-summary">
         <div className="summary-card">
           <h3>{bookings.length}</h3>
           <p>Total Bookings</p>
         </div>
 
-        <div className="summary-card">
-          <h3>
-            {bookings.filter((b) => b.status === 'Pending').length}
-          </h3>
-          <p>Pending</p>
-        </div>
-
-        <div className="summary-card">
-          <h3>
-            {bookings.filter((b) => b.status === 'Approved').length}
-          </h3>
-          <p>Approved</p>
-        </div>
-
-        <div className="summary-card">
-          <h3>
-            {bookings.filter((b) => b.status === 'Rejected').length}
-          </h3>
-          <p>Rejected</p>
-        </div>
+        {['Pending', 'Approved', 'Rejected', 'Cancelled'].map((status) => (
+          <div className="summary-card" key={status}>
+            <h3>{bookings.filter((b) => b.status === status).length}</h3>
+            <p>{status}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Status Filters */}
       <div className="booking-filters">
         {['All', 'Pending', 'Approved', 'Rejected', 'Cancelled'].map(
           (status) => (
             <button
               key={status}
+              type="button"
               className={filter === status ? 'active' : ''}
-              onClick={() => setFilter(status)}
+              onClick={() => {
+                setFilter(status);
+                setCurrentPage(1);
+              }}
             >
               {status}
             </button>
@@ -163,15 +176,47 @@ function AdminBookings() {
         )}
       </div>
 
-      {/* Booking List */}
+      <div className="booking-search-filters">
+        <input
+          type="search"
+          placeholder="Search user, email, resource or purpose..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
+
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => {
+            setSearch('');
+            setSelectedDate('');
+            setFilter('All');
+            setCurrentPage(1);
+          }}
+        >
+          Clear Filters
+        </button>
+      </div>
+
       <div className="admin-booking-list">
-        {filteredBookings.length === 0 ? (
+        {paginatedBookings.length === 0 ? (
           <div className="empty-bookings">
             <h3>No bookings found</h3>
-            <p>There are no bookings under this status.</p>
+            <p>Try changing your search or filters.</p>
           </div>
         ) : (
-          filteredBookings.map((booking) => (
+          paginatedBookings.map((booking) => (
             <div className="admin-booking-card" key={booking._id}>
               <div className="admin-booking-top">
                 <div>
@@ -182,41 +227,21 @@ function AdminBookings() {
                   </p>
                 </div>
 
-                <span
-                  className={`booking-status ${booking.status.toLowerCase()}`}
-                >
+                <span className={`booking-status ${booking.status.toLowerCase()}`}>
                   {booking.status}
                 </span>
               </div>
 
               <div className="admin-booking-details">
+                <p><strong>User:</strong> {booking.user?.name || 'Unknown user'}</p>
+                <p><strong>Email:</strong> {booking.user?.email || 'N/A'}</p>
+                <p><strong>Date:</strong> {formatDate(booking.startTime)}</p>
                 <p>
-                  <strong>User:</strong>{' '}
-                  {booking.user?.name || 'Unknown user'}
-                </p>
-
-                <p>
-                  <strong>Email:</strong>{' '}
-                  {booking.user?.email || 'N/A'}
-                </p>
-
-                <p>
-                  <strong>Date:</strong> {formatDate(booking.startTime)}
-                </p>
-
-                <p>
-                  <strong>Time:</strong>{' '}
-                  {formatTime(booking.startTime)} –{' '}
+                  <strong>Time:</strong> {formatTime(booking.startTime)} –{' '}
                   {formatTime(booking.endTime)}
                 </p>
-
-                <p>
-                  <strong>Attendees:</strong> {booking.attendees}
-                </p>
-
-                <p>
-                  <strong>Purpose:</strong> {booking.purpose}
-                </p>
+                <p><strong>Attendees:</strong> {booking.attendees}</p>
+                <p><strong>Purpose:</strong> {booking.purpose}</p>
               </div>
 
               {booking.status === 'Pending' && (
@@ -234,27 +259,21 @@ function AdminBookings() {
 
                   <div className="action-buttons">
                     <button
+                      type="button"
                       className="approve-btn"
                       disabled={updatingId === booking._id}
-                      onClick={() =>
-                        handleStatusUpdate(booking._id, 'Approved')
-                      }
+                      onClick={() => handleStatusUpdate(booking._id, 'Approved')}
                     >
-                      {updatingId === booking._id
-                        ? 'Updating...'
-                        : 'Approve'}
+                      {updatingId === booking._id ? 'Updating...' : 'Approve'}
                     </button>
 
                     <button
+                      type="button"
                       className="reject-btn"
                       disabled={updatingId === booking._id}
-                      onClick={() =>
-                        handleStatusUpdate(booking._id, 'Rejected')
-                      }
+                      onClick={() => handleStatusUpdate(booking._id, 'Rejected')}
                     >
-                      {updatingId === booking._id
-                        ? 'Updating...'
-                        : 'Reject'}
+                      {updatingId === booking._id ? 'Updating...' : 'Reject'}
                     </button>
                   </div>
                 </div>
@@ -270,6 +289,34 @@ function AdminBookings() {
           ))
         )}
       </div>
+
+      {filteredBookings.length > 0 && (
+        <div className="booking-pagination">
+          <span>
+            Showing {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filteredBookings.length)} of {filteredBookings.length}
+          </span>
+
+          <div>
+            <button
+              type="button"
+              disabled={safePage === 1}
+              onClick={() => setCurrentPage((page) => page - 1)}
+            >
+              Previous
+            </button>
+
+            <span>Page {safePage} of {totalPages}</span>
+
+            <button
+              type="button"
+              disabled={safePage === totalPages}
+              onClick={() => setCurrentPage((page) => page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
