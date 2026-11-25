@@ -1,100 +1,184 @@
 
+import React, { useEffect, useState } from 'react';
+
 import Layout from '../../components/Layout/Layout';
 import StatCard from '../../components/StatCard/StatCard';
-import TicketCard from '../../components/TicketCard/TicketCard';
+import { getDashboardData } from '../../services/dashboardService';
+
 import './Dashboard.css';
 
-const sampleTickets = [
-  {
-    id: 'TK-101',
-    title: 'Unable to access account',
-    description: 'User cannot log in to the portal.',
-    priority: 'High',
-    category: 'Authentication',
-    status: 'Open',
-  },
-  {
-    id: 'TK-102',
-    title: 'Email notifications not working',
-    description: 'Notification emails are not being received.',
-    priority: 'Medium',
-    category: 'Email',
-    status: 'Pending',
-  },
-  {
-    id: 'TK-103',
-    title: 'Page loading slowly',
-    description: 'Dashboard takes too long to load.',
-    priority: 'Low',
-    category: 'Performance',
-    status: 'Open',
-  },
-];
-
 function Dashboard() {
-  const totalTickets = sampleTickets.length;
+  const [bookings, setBookings] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    cancelled: 0,
+  });
 
-  const openTickets = sampleTickets.filter(
-    (ticket) => ticket.status === 'Open'
-  ).length;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const urgentTickets = sampleTickets.filter(
-    (ticket) => ticket.priority === 'High'
-  ).length;
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError('');
 
-  const resolvedTickets = sampleTickets.filter(
-    (ticket) => ticket.status === 'Resolved'
-  ).length;
+        const data = await getDashboardData();
+
+        setBookings(data.bookings);
+        setStats(data.stats);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  const recentBookings = [...bookings]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt || b.startTime) -
+        new Date(a.createdAt || a.startTime)
+    )
+    .slice(0, 5);
+
+  const formatDate = (date) => {
+    if (!date) return 'Not available';
+
+    return new Date(date).toLocaleString();
+  };
 
   return (
     <Layout title="Dashboard">
       <div className="dashboard">
+
         <div className="dashboard-welcome">
           <h1>Overview</h1>
-          <p>Monitor your ticket queue and support activity.</p>
+          <p>Monitor your resource bookings and activity.</p>
         </div>
 
-        <div className="dashboard-stats">
-          <StatCard
-            title="Total Tickets"
-            value={totalTickets}
-            subtitle="All tickets"
-            icon="▤"
-          />
-
-          <StatCard
-            title="Open Tickets"
-            value={openTickets}
-            subtitle="Awaiting action"
-            icon="◷"
-          />
-
-          <StatCard
-            title="Urgent Tickets"
-            value={urgentTickets}
-            subtitle="High priority"
-            icon="⚡"
-          />
-
-          <StatCard
-            title="Resolved"
-            value={resolvedTickets}
-            subtitle="Completed tickets"
-            icon="✓"
-          />
-        </div>
-
-        <div className="dashboard-section">
-          <div className="section-heading">
-            <h2>Recent Tickets</h2>
+        {error && (
+          <div className="dashboard-error">
+            {error}
           </div>
+        )}
 
-          <div className="recent-ticket-list">
-            {sampleTickets.map((ticket) => (
-              <TicketCard key={ticket.id} ticket={ticket} />
-            ))}
+        {loading ? (
+          <div className="dashboard-loading">
+            Loading dashboard...
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Booking Statistics */}
+            <div className="dashboard-stats">
+              <StatCard
+                title="Total Bookings"
+                value={stats.total}
+                subtitle="All bookings"
+                icon="▤"
+              />
+
+              <StatCard
+                title="Pending"
+                value={stats.pending}
+                subtitle="Awaiting approval"
+                icon="◷"
+              />
+
+              <StatCard
+                title="Approved"
+                value={stats.approved}
+                subtitle="Confirmed bookings"
+                icon="✓"
+              />
+
+              <StatCard
+                title="Cancelled"
+                value={stats.cancelled}
+                subtitle="Cancelled bookings"
+                icon="✕"
+              />
+            </div>
+
+            {/* Additional Statistics */}
+            <div className="dashboard-extra-stats">
+              <div className="extra-stat">
+                <span>Rejected Bookings</span>
+                <strong>{stats.rejected}</strong>
+              </div>
+            </div>
+
+            {/* Recent Bookings */}
+            <div className="dashboard-section">
+              <div className="section-heading">
+                <h2>Recent Bookings</h2>
+                <span>{bookings.length} total</span>
+              </div>
+
+              {recentBookings.length === 0 ? (
+                <div className="dashboard-empty">
+                  <h3>No bookings yet</h3>
+                  <p>Your recent bookings will appear here.</p>
+                </div>
+              ) : (
+                <div className="recent-booking-list">
+                  {recentBookings.map((booking) => {
+                    const resourceName =
+                      typeof booking.resource === 'object'
+                        ? booking.resource?.name
+                        : null;
+
+                    return (
+                      <div
+                        className="booking-card"
+                        key={booking._id}
+                      >
+                        <div className="booking-card-header">
+                          <div>
+                            <h3>
+                              {resourceName || 'Resource Booking'}
+                            </h3>
+
+                            <p>{booking.purpose}</p>
+                          </div>
+
+                          <span
+                            className={`booking-status ${booking.status?.toLowerCase()}`}
+                          >
+                            {booking.status}
+                          </span>
+                        </div>
+
+                        <div className="booking-card-details">
+                          <span>
+                            <strong>Start:</strong>{' '}
+                            {formatDate(booking.startTime)}
+                          </span>
+
+                          <span>
+                            <strong>End:</strong>{' '}
+                            {formatDate(booking.endTime)}
+                          </span>
+
+                          <span>
+                            <strong>Attendees:</strong>{' '}
+                            {booking.attendees}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </Layout>
   );
