@@ -3,6 +3,7 @@ import express from 'express';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 import adminMiddleware from '../middleware/adminMiddleware.js';
+import { getAdminStats } from '../controllers/adminStatsController.js';
 
 const router = express.Router();
 
@@ -18,5 +19,5 @@ router.get(
     });
   }
 );
-
+router.get('/stats', adminMiddleware, getAdminStats);
 export default router;

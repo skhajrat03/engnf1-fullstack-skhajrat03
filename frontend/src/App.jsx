@@ -12,6 +12,14 @@ import Bookings from './pages/Bookings/Bookings'
 import Admin from "./pages/Admin/Admin";
 import MyBookings from './pages/MyBookings/MyBookings';
 import AdminBookings from './pages/AdminBookings/AdminBookings';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import { Routes, Route } from 'react-router-dom';
+
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import AdminLayout from './components/AdminLayout/AdminLayout';
+
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import AdminBookings from './pages/AdminBookings/AdminBookings';
 
 function App() {
   return (
@@ -34,6 +42,16 @@ function App() {
       <Route path="/admin" element={<Admin />} />
       <Route path="/my-bookings" element={<MyBookings />} />
       <Route path="/admin/bookings" element={<AdminBookings />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="bookings" element={<AdminBookings />} />
+        </Route>
+      </Route>
+
     </Routes>
   )
 }

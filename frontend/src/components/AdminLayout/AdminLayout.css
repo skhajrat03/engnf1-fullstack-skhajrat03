@@ -1,0 +1,127 @@
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-sidebar {
+  width: 250px;
+  background: #0f172a;
+  color: white;
+  padding: 25px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.admin-brand {
+  padding: 0 12px 30px;
+  border-bottom: 1px solid #334155;
+}
+
+.admin-brand h2 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.admin-brand span {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.admin-nav a {
+  text-decoration: none;
+  color: #cbd5e1;
+  padding: 13px 14px;
+  border-radius: 7px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+  background: #2563eb;
+  color: white;
+}
+
+.admin-logout {
+  margin-top: auto;
+  padding: 12px;
+  background: #dc2626;
+  border: none;
+  border-radius: 7px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-topbar {
+  height: 70px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-topbar h3 {
+  font-size: 16px;
+}
+
+.admin-topbar span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.admin-content {
+  padding: 10px;
+}
+
+@media (max-width: 700px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .admin-brand {
+    padding-bottom: 15px;
+  }
+
+  .admin-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 15px;
+  }
+
+  .admin-nav a {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+
+  .admin-logout {
+    margin-top: 15px;
+  }
+
+  .admin-topbar {
+    height: 60px;
+    padding: 0 15px;
+  }
+}
