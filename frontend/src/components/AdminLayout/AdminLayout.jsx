@@ -11,7 +11,8 @@ function AdminLayout() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/login');
+
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -23,13 +24,28 @@ function AdminLayout() {
         </div>
 
         <nav className="admin-nav">
-          <NavLink to="/admin/dashboard">Dashboard</NavLink>
-          <NavLink to="/admin/bookings">Manage Bookings</NavLink>
-          <NavLink to="/admin/resources">Manage Resources</NavLink>
-          <NavLink to="/admin/users">Manage Users</NavLink>
+          <NavLink to="/admin/dashboard">
+            Dashboard
+          </NavLink>
+
+          <NavLink to="/admin/bookings">
+            Manage Bookings
+          </NavLink>
+
+          <NavLink to="/admin/resources">
+            Manage Resources
+          </NavLink>
+
+          <NavLink to="/admin/users">
+            Manage Users
+          </NavLink>
         </nav>
 
-        <button className="admin-logout" onClick={handleLogout}>
+        <button
+          type="button"
+          className="admin-logout"
+          onClick={handleLogout}
+        >
           Logout
         </button>
       </aside>
